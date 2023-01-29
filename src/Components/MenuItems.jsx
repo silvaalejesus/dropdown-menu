@@ -1,21 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Dropdown from "./Dropdown";
 
 /* No MenuItems componente, receberemos a propriedade items e exibiremos os itens do menu.
 Também verificaremos se os itens têm um submenue, em seguida, exibiremos um menu suspenso. */
 const MenuItems = ({ items, depthLevel }) => {
   // estado que indica se o menu está aberto ou fechado
-  const [openMenu, setDropdown] = useState(false);
+  const [dropdown, setDropdown] = useState(false);
+  let ref = useRef();
+
+  //   lógica para Fechar o menu suspenso quando os usuários clicarem fora dele
+  useEffect(() => {
+    const handler = (event) => {
+      if (dropdown && ref.current && !ref.current.contains(event.target)) {
+        setDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    document.addEventListener("touchstart", handler);
+    return () => {
+      // Cleanup the event listener
+      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("touchstart", handler);
+    };
+  }, [dropdown]);
 
   return (
-    <li className="menu-items">
+    <li className="menu-items" ref={ref}>
       {/* verifica qual item tem submenu */}
       {items.submenu ? (
         <>
           {/* o button abre o  menu suspenso */}
           <button
             type="button"
-            aria-expanded={openMenu ? true : false}
+            aria-expanded={dropdown ? true : false}
             onClick={() => setDropdown((prev) => !prev)}
           >
             {items.title}
@@ -25,7 +42,7 @@ const MenuItems = ({ items, depthLevel }) => {
           {/* exibe o menu suspenso */}
           <Dropdown
             submenus={items.submenu}
-            dropdown={openMenu}
+            dropdown={dropdown}
             depthLevel={depthLevel}
           />
         </>
