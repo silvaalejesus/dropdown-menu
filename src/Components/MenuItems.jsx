@@ -24,8 +24,26 @@ const MenuItems = ({ items, depthLevel }) => {
     };
   }, [dropdown]);
 
+  /*
+  Com o código, o onMouseEnter manipulador é invocado quando o ponteiro do mouse se move para um item de menu.
+  E a partir daí verificamos se a largura interior da janela é maior que 960px, então abrimos o dropdown.
+  Sempre que o mouse sai do item de menu, invocamos o onMouseLeavemanipulador, que então fecha o menu suspenso.
+   */
+  const onMouseEnter = () => {
+    window.innerWidth > 960 && setDropdown(true);
+  };
+
+  const onMouseLeave = () => {
+    window.innerWidth > 960 && setDropdown(false);
+  };
+
   return (
-    <li className="menu-items" ref={ref}>
+    <li
+      className="menu-items"
+      ref={ref}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       {/* verifica qual item tem submenu */}
       {items.submenu ? (
         <>
